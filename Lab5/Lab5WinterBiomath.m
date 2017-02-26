@@ -178,7 +178,13 @@ disp(newlocs);
 % Take care not to double count! The inputs should be the sequence and the
 % set of coordinates for each "residue". Test your code on the sequence
 % 'HHPPHH' by inputting several different conformations (sets of coordinates).
-% 
+
+clear all;clc;
+close all; 
+
+
+
+
 % 2.2. Write a function to randomly generate an initial conformation, that is an
 % array of length N of two-dimensional coordinates of the "residues". Here
 % is a possible outline: start residue 1 at the origin (coordinate (0,0))
