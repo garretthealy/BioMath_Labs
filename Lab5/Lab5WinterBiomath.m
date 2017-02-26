@@ -23,6 +23,9 @@
 % be the objective function. Use the following list of 5 "city" coordinates to
 % test your objective function for different order of verticies:
 
+clear all; 
+close all; 
+
 xcoord=[0 2 -1 2 -2];
 ycoord=[0 1 1 3 1];
 
@@ -30,6 +33,7 @@ load('US_cities.mat');
 
 tlength = objfunk(xcoord,ycoord,[2 3 4 5 1]);
 
+%%
 % 1.2: Write a Monte Carlo simulation that uses the objective function
 % from task 1.1, and uses the following proposal distribution: take the
 % current ordered list of vertices and swap two randomly selected ones
@@ -40,7 +44,46 @@ tlength = objfunk(xcoord,ycoord,[2 3 4 5 1]);
 % US_cities.mat (which contains coordinates for 22 US cities.) Run the
 % simulation for different values of T and oberve the effect on convergence. 
 
+index = 1:22;
 
+tlength = objfunk(lat,long,index);
+startlength = tlength;
+c = 0;
+T = 0.1;
+while c<100000000
+    swap1 = round(1 + 21*rand);
+    swap2 = round(1 + 21*rand);
+    ind1 = index(swap1);
+    ind2 = index(swap2);
+    index(swap1) = ind2;
+    index(swap2) = ind1;
+    test = objfunk(lat,long,index);
+    if test<tlength
+    else
+        p = exp((tlength - test)/T);
+        maxp = exp(tlength/T);
+        p = p/maxp;
+        r = rand;
+        if r<p
+        else 
+            index(swap1) = ind1;
+            index(swap2) = ind2;
+        end
+    end
+    c=c+1;
+end
+
+endlength = objfunk(lat,long,index);
+diff = startlength - endlength;
+
+newlocs = cell(char(0),length(index),1);
+for i = 1:length(index)
+    ind = index(i);
+    newlocs(i) = names(ind);
+end
+
+disp(endlength);
+disp(newlocs);
 
 % 1.3 Implement a simulated annealing cooling schedule to change
 % temperature T from an initial temperature (T_init) down to final
