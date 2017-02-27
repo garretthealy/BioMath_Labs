@@ -36,7 +36,12 @@
 % i and j. Start with an open state. Run your simulation for 1000 time 
 % steps using the target distribution: P(O) = 0.5; P(C) = 0.5. Plot the 
 % states of the channel (0 and 1) over 1000 time steps. 
-%
+
+clear all;clc;
+close all; 
+
+
+
 % 1.2 Repeat the simulation with the target distribution of P(O) = 0.1;
 % P(C) = 0.9, and plot the states of the channel over 1000 time steps.
 %

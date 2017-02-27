@@ -179,7 +179,17 @@ disp(newlocs);
 % set of coordinates for each "residue". Test your code on the sequence
 % 'HHPPHH' by inputting several different conformations (sets of coordinates).
 
+clear all;clc;
+close all; 
 
+load('test_seqs.mat')
+
+tseq = 'HHPPHH';
+index = [3 4;1 2;5 6];
+[a,b]=lattice(tseq,index);
+
+
+%index = [1:8;9:16;17:24;25:32;33:40;41:48];
 
 % 2.2. Write a function to randomly generate an initial conformation, that is an
 % array of length N of two-dimensional coordinates of the "residues". Here
@@ -192,7 +202,10 @@ disp(newlocs);
 % and if there is only one, take one more step back, until there is a
 % different placement that can be chosen. Hint: use the function randi(N)
 % to generate random integers from 1 to N, inclusive.
-%
+
+
+
+
 % 2.3 Write a function to randomly generate a candidate conformation, given a
 % current conformation. This can be combined with the first function to
 % generate an initial conformation: for example, you can send the current
