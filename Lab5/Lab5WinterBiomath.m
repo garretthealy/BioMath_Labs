@@ -321,7 +321,7 @@ while c<10000
             finalplacement1 = newplacement;
         end
     end
-    c=c+1;
+    c=c+1
 end
 
 x  = zeros(1,length(finalcoords1));
@@ -364,7 +364,7 @@ while c<10000 && t < 10
             finalplacement2 = newplacement;
         end
     end
-    c=c+1;
+    c=c+1
 end
 
 x  = zeros(1,length(finalcoords2));
@@ -407,7 +407,7 @@ while c<10000 && t < 10
             finalplacement = newplacement;
         end
     end
-    c=c+1;
+    c=c+1
 end
 
 x  = zeros(1,length(finalcoords));
