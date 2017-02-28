@@ -1,9 +1,8 @@
-function [coords] = latgen(seq)
+function [newcoords] = reconstruct(coords,n)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Generates a random lattice structure for the protein with boundaries of m
-% and n. 
-%
+% This function reconstructs the lattice (coords) from point n
+% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 coords = cell(1,length(seq));

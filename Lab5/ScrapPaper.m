@@ -1,12 +1,6 @@
-function [coords] = latgen(seq)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Generates a random lattice structure for the protein with boundaries of m
-% and n. 
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clear coords 
 
-coords = cell(1,length(seq));
+coords = cell(1,length(tseq));
 
 coords{1} = [0 0];
 last = coords{1};
@@ -22,14 +16,14 @@ else
 end
 
 c = 3;
-while c<=length(seq)
+while c<=length(tseq)
     last = coords{c-1};
     coords{c} = coords{c-2};
     
     %makes sure the snake doesn't double back
     while isequal(coords{c},coords{c-2})
         r = rand;
-        if r<0.25
+        if r>0.25
             coords{c} = [last(1) last(2)+1]; %move right
         elseif r>=0.25 && r<0.5
             coords{c} = [last(1)+1 last(2)]; %move up
@@ -45,7 +39,7 @@ while c<=length(seq)
     while d<c
         if isequal(coords{d},coords{c})
             r = rand;
-            if r<0.25
+            if r>0.25
                 coords{c} = [last(1) last(2)+1]; %move right
             elseif r>=0.25 && r<0.5
                 coords{c} = [last(1)+1 last(2)]; %move up
@@ -64,7 +58,7 @@ while c<=length(seq)
     
     %makes sure the snake hasn't hit a dead end (if c is not the last
     %number)
-    if c == length(seq)
+    if c == length(tseq)
     else
         for i =1:c
             if isequal(coords{i},[cur(1) cur(2)+1]) || isequal(coords{i},[cur(1) cur(2)-1]) ...
@@ -95,16 +89,33 @@ while c<=length(seq)
     c = q+1;
 end
 
-x  = zeros(1,length(coords));
-y = zeros(1,length(coords));
-for i = 1:length(coords)
+%%
+%checking the max 
+
+mx1 = 0;
+mx2 = 0;
+mn1 = 0;
+mn2 = 0;
+for i = 2:4
+    last = coords{i-1};
     cur = coords{i};
-    x(i) =cur(1);
-    y(i) = cur(2);
+    if cur(1)>last(1) 
+        mx1 = cur(1);
+    end 
+    if cur(2)>last(2)
+        mx2 = cur(2);
+    end
+    if cur(1)<last(1) 
+        mn1 = cur(1);
+    end 
+    if cur(2)<last(2)
+        mn2 = cur(2);
+    end
 end
 
-figure 
-plot(x,y);
+borders = [mx1 mx2; mn1 mn2];
+m = borders(1,1)- borders(2,1);
+n = borders(2,1) - borders(2,2);
 
 
-end
+

@@ -1,0 +1,61 @@
+function [coords] = latgen(seq)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Generates a random lattice structure for the protein with boundaries of m
+% and n. 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+coords = cell(1,length(seq));
+
+coords{1} = [0 0];
+
+c = 2;
+while c<length(seq)
+    last = coords{c-1};
+    coords{c} = last;
+    while coords{c}== last || t < 2
+        t = 0;
+        coords{c} = [last(1)+randi([-1 1]) last(2)+randi([-1 1])];
+        for i = 1:c
+            if (coord{c}(1) + 1 == coord{i}(1)) && (coord{c}(2) + 1 == coord{i}(2))
+                t = t+1;
+            end
+            if (coord{c}(1) + 1 == coord{i}(1)) && (coord{c}(2) - 1 == coord{i}(2))
+                t = t+1;
+            end
+            if (coord{c}(1) - 1 == coord{i}(1)) && (coord{c}(2) + 1 == coord{i}(2))
+                t = t+1;
+            end
+            if (coord{c}(1) + 1 == coord{i}(1)) && (coord{c}(2) + 1 == coord{i}(2))
+                t = t+1;
+            end
+        end
+            
+    end
+    check = coords{c};
+    
+    d = 1;
+    while d<c
+        if coords{d} == coords{c}
+            coords{c} = [last(1)+randi([-1 1]) last(2)+randi([-1 1])];
+            d = 0;
+        end
+        d = d+1;
+    end
+    c = c+1;
+end
+
+% 
+% for i = 2:length(coords)
+%     last = coords{i-1};
+%     coords{i} = [last(1)+randi([-1 1]) last(2)+randi([-1 1])];
+%     for j = 1:i
+%         while coords{i} == coords{j}
+%             coords{i} = [last(1)+randi([-1 1]) last(2)+randi([-1 1])];
+%         end
+%     end
+% end 
+
+end

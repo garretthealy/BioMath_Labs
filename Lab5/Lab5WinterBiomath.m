@@ -203,9 +203,9 @@ index = [3 4;1 2;5 6];
 % different placement that can be chosen. Hint: use the function randi(N)
 % to generate random integers from 1 to N, inclusive.
 
-coords = cell(length(seq),1);
+[coords] = latgen(seq1);
 
-
+%
 % 2.3 Write a function to randomly generate a candidate conformation, given a
 % current conformation. This can be combined with the first function to
 % generate an initial conformation: for example, you can send the current
@@ -213,7 +213,9 @@ coords = cell(length(seq),1);
 % start rebuilding (anywhere from 1 - total rebuild, to N - no rebuilding)
 % and then proceed with the same algorithm you used to generate the random
 % initial conformation.
-%
+
+
+
 % 2.4. Write a script with Monte Carlo code that calls the above functions
 % to generate a new candidate conformation, then evaluates its energy
 % compared to the current conformation, and decides to accept or reject it,
