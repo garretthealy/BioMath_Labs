@@ -96,26 +96,25 @@ mx1 = 0;
 mx2 = 0;
 mn1 = 0;
 mn2 = 0;
-for i = 2:4
-    last = coords{i-1};
+for i = 2:length(coords)
     cur = coords{i};
-    if cur(1)>last(1) 
+    if cur(1)>mx1 
         mx1 = cur(1);
     end 
-    if cur(2)>last(2)
+    if cur(2)>mx2
         mx2 = cur(2);
     end
-    if cur(1)<last(1) 
+    if cur(1)<mn1
         mn1 = cur(1);
     end 
-    if cur(2)<last(2)
+    if cur(2)<mn2
         mn2 = cur(2);
     end
 end
 
 borders = [mx1 mx2; mn1 mn2];
 m = borders(1,1)- borders(2,1);
-n = borders(2,1) - borders(2,2);
+n = borders(1,2) - borders(2,2);
 
 
 

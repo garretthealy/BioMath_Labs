@@ -205,7 +205,7 @@ index = [3 4;1 2;5 6];
 
 [coords] = latgen(seq1);
 
-%
+%%
 % 2.3 Write a function to randomly generate a candidate conformation, given a
 % current conformation. This can be combined with the first function to
 % generate an initial conformation: for example, you can send the current
@@ -214,7 +214,8 @@ index = [3 4;1 2;5 6];
 % and then proceed with the same algorithm you used to generate the random
 % initial conformation.
 
-
+[coords] = latgen(seq1);
+[newcoords] = reconstruct(coords,40);
 
 % 2.4. Write a script with Monte Carlo code that calls the above functions
 % to generate a new candidate conformation, then evaluates its energy
@@ -232,8 +233,55 @@ index = [3 4;1 2;5 6];
 % is bug-free, run it 10 times with different T parameters and report a)
 % the lowest-energy conformation and its energy; b) the number of Monte Carlo
 % steps it takes to find it. Comment on which T value appears optimal.
-%
-% 2.5 Please find three sequences (which were used to test optimization
+
+
+seq = 'HHPPHH';
+[coords] = latgen(seq);
+[placement,energy] = lattice(seq,coords);
+startcoords = coords;
+finalcoords = coords;
+startplacement = placement;
+finalplacement = placement;
+c = 0;
+T = 1;
+while c<10000
+    r = randi([1,length(seq)]);
+    [coords] = reconstruct(coords,r);
+    [newplacement, newenergy] = lattice(seq,coords);
+    if newenergy<energy
+        energy = newenergy;
+        finalcoords = coords;
+        finalplacement = newplacement;
+    else
+        p = exp((energy - newenergy)/T);
+        maxp = exp(energy/T);
+        p = p/maxp;
+        r = rand;
+        if r<p
+        else 
+            energy = newenergy;
+            finalcoords = coords;
+            finalplacement = newplacement;
+        end
+    end
+    c=c+1;
+end
+
+x  = zeros(1,length(finalcoords));
+y = zeros(1,length(finalcoords));
+for i = 1:length(finalcoords)
+    cur = finalcoords{i};
+    x(i) =cur(1);
+    y(i) = cur(2);
+end
+
+figure 
+plot(x,y);
+
+
+
+
+%% 2.5 Please find three sequences (which were used to test optimization
 % schemes in the 1990s) in the file test_seqs.mat, saved as character
 % strings of Hs and Ps in variables seq1, seq2, and seq3. For each
 % sequence, run batches of 10 different MC runs with the optimal value of T
@@ -243,3 +291,132 @@ index = [3 4;1 2;5 6];
 % these optimization runs fail to reach the minimum energy conformation?
 % (make sure you set the max iterations large enough to explore the state
 % space). 
+
+seq = seq1;
+[coords] = latgen(seq);
+[placement,energy1] = lattice(seq,coords);
+startcoords1 = coords;
+finalcoords1 = coords;
+startplacement1 = placement;
+finalplacement1 = placement;
+c = 0;
+T = 1;
+while c<10000 
+    r = randi([1,length(seq)]);
+    [coords] = reconstruct(coords,r);
+    [newplacement, newenergy] = lattice(seq,coords);
+    if newenergy<energy1
+        energy1 = newenergy;
+        finalcoords1 = coords;
+        finalplacement1 = newplacement;
+    else
+        p = exp((energy1 - newenergy)/T);
+        maxp = exp(energy1/T);
+        p = p/maxp;
+        r = rand;
+        if r<p
+        else 
+            energy1 = newenergy;
+            finalcoords1 = coords;
+            finalplacement1 = newplacement;
+        end
+    end
+    c=c+1;
+end
+
+x  = zeros(1,length(finalcoords1));
+y = zeros(1,length(finalcoords1));
+for i = 1:length(finalcoords1)
+    cur = finalcoords1{i};
+    x(i) =cur(1);
+    y(i) = cur(2);
+end
+
+figure 
+plot(x,y);
+
+seq = seq2;
+[coords] = latgen(seq);
+[placement,energy2] = lattice(seq,coords);
+startcoords2 = coords;
+finalcoords2 = coords;
+startplacement2 = placement;
+finalplacement2 = placement;
+c = 0;
+T = 1;
+while c<10000 && t < 10
+    r = randi([1,length(seq)]);
+    [coords] = reconstruct(coords,r);
+    [newplacement, newenergy] = lattice(seq,coords);
+    if newenergy<energy
+        energy2 = newenergy;
+        finalcoords2 = coords;
+        finalplacement2 = newplacement;
+    else
+        p = exp((energy2 - newenergy)/T);
+        maxp = exp(energy2/T);
+        p = p/maxp;
+        r = rand;
+        if r<p
+        else 
+            energy2 = newenergy;
+            finalcoords2 = coords;
+            finalplacement2 = newplacement;
+        end
+    end
+    c=c+1;
+end
+
+x  = zeros(1,length(finalcoords2));
+y = zeros(1,length(finalcoords2));
+for i = 1:length(finalcoords2)
+    cur = finalcoords2{i};
+    x(i) =cur(1);
+    y(i) = cur(2);
+end
+
+figure 
+plot(x,y);
+
+seq = seq3;
+[coords] = latgen(seq);
+[placement,energy] = lattice(seq,coords);
+startcoords = coords;
+finalcoords = coords;
+startplacement = placement;
+finalplacement = placement;
+c = 0;
+T = 1;
+while c<10000 && t < 10
+    r = randi([1,length(seq)]);
+    [coords] = reconstruct(coords,r);
+    [newplacement, newenergy] = lattice(seq,coords);
+    if newenergy<energy
+        energy = newenergy;
+        finalcoords = coords;
+        finalplacement = newplacement;
+    else
+        p = exp((energy - newenergy)/T);
+        maxp = exp(energy/T);
+        p = p/maxp;
+        r = rand;
+        if r<p
+        else 
+            energy = newenergy;
+            finalcoords = coords;
+            finalplacement = newplacement;
+        end
+    end
+    c=c+1;
+end
+
+x  = zeros(1,length(finalcoords));
+y = zeros(1,length(finalcoords));
+for i = 1:length(finalcoords)
+    cur = finalcoords{i};
+    x(i) =cur(1);
+    y(i) = cur(2);
+end
+
+figure 
+plot(x,y);

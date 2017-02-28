@@ -1,28 +1,36 @@
-function [coords] = latgen(seq)
+function [newcoords] = reconstruct(coords,n)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Generates a random lattice structure for the protein with boundaries of m
-% and n. 
-%
+% This function reconstructs the lattice (coords) from point n
+% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-coords = cell(1,length(seq));
+if nargin < 2
+    error('You need a previous coordinate cell vector as well as a starting' ...
+        + ' point for the reconstruction.')
+elseif n>length(coords)
+    error('n is larger than the length of your coordinate cell')
+end 
 
-coords{1} = [0 0];
-last = coords{1};
-r = rand;
-if r<0.25
-    coords{2} = [last(1) last(2)+1]; %move right
-elseif r>=0.25 && r<0.5
-    coords{2} = [last(1)+1 last(2)]; %move up
-elseif r>=0.5 && r<0.75
-    coords{2} = [last(1) last(2)-1]; %move left
-else 
-    coords{2} = [last(1)-1 last(2)]; %move down
+c = n;
+
+if c ==1 || c==2
+    coords{1} = [0 0];
+    last = coords{1};
+    r = rand;
+    if r<0.25
+        coords{2} = [last(1) last(2)+1]; %move right
+    elseif r>=0.25 && r<0.5
+        coords{2} = [last(1)+1 last(2)]; %move up
+    elseif r>=0.5 && r<0.75
+        coords{2} = [last(1) last(2)-1]; %move left
+    else 
+        coords{2} = [last(1)-1 last(2)]; %move down
+    end
+    c = 3;
 end
 
-c = 3;
-while c<=length(seq)
+while c<=length(coords)
     last = coords{c-1};
     coords{c} = coords{c-2};
     
@@ -39,13 +47,12 @@ while c<=length(seq)
             coords{c} = [last(1)-1 last(2)]; %move down
         end
     end
-        
     cur = coords{c};
     t=0;
     
     %makes sure the snake hasn't hit a dead end (if c is not the last
     %number)
-    if c == length(seq)
+    if c == length(coords)
     else
         for i =1:c
             if isequal(coords{i},[cur(1) cur(2)+1]) || isequal(coords{i},[cur(1) cur(2)-1]) ...
@@ -56,11 +63,10 @@ while c<=length(seq)
     end
     
     %corrects the snake if it has hit a dead end
-    q = c;
+    q = c-1;
     while t==4
-        q = q-1;
         p = 0;
-        for i = 1:q
+        for i = 1:q-1
             if isequal(coords{i},[last(1) last(2)+1]) || isequal(coords{i},[last(1) last(2)-1]) ...
                     || isequal(coords{i},[last(1)+1 last(2)]) || isequal(coords{i},[last(1)-1 last(2)])
                 p = p+1;
@@ -68,31 +74,33 @@ while c<=length(seq)
         end
         if p <2
             t=0;
-            q=c;
         else 
             q = q-1;
         end
     end
-    
     %makes sure the snake is in an unoccupied spot
-    d = 1;
-    while d<c
-        if isequal(coords{d},coords{c})
-            r = rand;
-            if r<0.25
-                coords{c} = [last(1) last(2)+1]; %move right
-            elseif r>=0.25 && r<0.5
-                coords{c} = [last(1)+1 last(2)]; %move up
-            elseif r>=0.5 && r<0.75
-                coords{c} = [last(1) last(2)-1]; %move left
-            else 
-                coords{c} = [last(1)-1 last(2)]; %move down
+    if q == c-1
+        d = 1;
+        while d<c
+            if isequal(coords{d},coords{c})
+                r = rand;
+                if r<0.25
+                    coords{c} = [last(1) last(2)+1]; %move right
+                elseif r>=0.25 && r<0.5
+                    coords{c} = [last(1)+1 last(2)]; %move up
+                elseif r>=0.5 && r<0.75
+                    coords{c} = [last(1) last(2)-1]; %move left
+                else 
+                    coords{c} = [last(1)-1 last(2)]; %move down
+                end
+                d=0;
             end
-            d=0;
+            d = d+1;
         end
-        d = d+1;
+        c = q+2;
+    else 
+        c=q+1;
     end
-    c = q+1;
 end
 
 x  = zeros(1,length(coords));
@@ -106,5 +114,6 @@ end
 figure 
 plot(x,y);
 
+newcoords = coords;
 
 end
