@@ -47,33 +47,44 @@
 % Plot the solution of this ODE on the same plot as the 10 stochastic
 % realizations of the pure birth process.
 
-M = 1;
-N = 1; 
+clear all
+close all
 
-c = 0.1; 
-X = 1; 
+figure 
+hold on
+for i = 1:10
+    M = 1;
+    N = 1; 
 
-t = 0; %sets initial time 
-tplot = zeros(1); 
-tmax = 100;
-k = 2; 
-xplot = ones(1); 
-tau=1; 
+    c = 0.1; 
+    X = 1; 
 
-while (t<tmax) && tau~=0
-    r1 = rand;
-    r2 = rand; 
-    a = c*X;  
-    A = sum(a); 
-    tau = -log(r1)/A;
-    t = t+tau; 
-    X = X+a; 
-    tplot(k) = t; 
-    xplot(k) = X; 
-    k = k+1; 
+    t = 0; %sets initial time 
+    tplot = zeros(1); 
+    tmax = 100;
+    k = 2; 
+    xplot = ones(1); 
+    tau=1; 
+
+    while (t<tmax) && tau~=0
+        r1 = rand;
+        r2 = rand; 
+        a = c*X;  
+        A = sum(a); 
+        tau = -log(r1)/A;
+        t = t+tau; 
+        X = X+1; 
+        tplot(k) = t; 
+        xplot(k) = X; 
+        k = k+1; 
+    end
+    plot(tplot,xplot)
 end
 
-plot(tplot,xplot)
+[t2,y] = ode45(@(t,y) 0.1*y, [0 100], 1);
+plot(t2,y,'-o')
+hold off
+legend('1','2','3','4','5','6','7','8','9','10','ODE');
 
 % 1.2 *Pure death process*
 %
@@ -86,13 +97,96 @@ plot(tplot,xplot)
 %
 % Plot the solution of this ODE on the same plot as the 10 stochastic
 % realizations of the pure birth process.
-%
+
+figure 
+hold on
+for i = 1:10 
+    M = 1;
+    N = 1; 
+
+    c = 0.05; 
+    X = 1000; 
+
+    t = 0; %sets initial time 
+    tplot = zeros(1); 
+    tmax = 100;
+    k = 2; 
+    xplot = 1000*ones(1); 
+    tau=1; 
+
+    while (t<tmax) && tau~=0
+        r1 = rand;
+        r2 = rand; 
+        a = c*X;  
+        A = sum(a); 
+        tau = -log(r1)/A;
+        t = t+tau; 
+        X = X-1; 
+        tplot(k) = t; 
+        xplot(k) = X; 
+        k = k+1; 
+    end
+    plot(tplot,xplot)
+end
+
+[t2,y] = ode45(@(t,y) -0.05*y, [0 100], 1000);
+plot(t2,y,'-o')
+hold off
+legend('1','2','3','4','5','6','7','8','9','10','ODE');
+
+
 % 1.3 *Extinction time statistics*
 % Run 100 simulations until all the individuals die and compute the
 % mean time to extinction and the standard deviation. How well is it
 % predicted by the deterministic mean solution (exponential decay) dipping
 % below 1 individual?  
-%
+
+extt = zeros(1,100);
+
+for i = 1:100 
+    M = 1;
+    N = 1; 
+
+    c = 0.05; 
+    X = 1000; 
+
+    t = 0; %sets initial time 
+    tplot = zeros(1); 
+    tmax = 200;
+    k = 2; 
+    xplot = 1000*ones(1); 
+    tau=1; 
+
+    while (t<tmax) && tau~=0 && X>1
+        r1 = rand;
+        r2 = rand; 
+        a = c*X;  
+        A = sum(a); 
+        tau = -log(r1)/A;
+        t = t+tau; 
+        X = X-1; 
+        tplot(k) = t; 
+        xplot(k) = X; 
+        k = k+1; 
+    end
+    extt(i) = t; 
+end
+
+meanext = mean(extt);
+stdext = std(extt);
+
+[t2,y] = ode45(@(t,y) -0.05*y, [0 200], 1000);
+for i = 1:length(y) 
+    if y(i) > 1 
+        extt2 = t2(i);
+    end
+end
+
+% The extinction time is fairly well modeled, but after running it a few
+% times it appear to predict a slightly quicker extinction that we would
+% expect simply by looking at the ODE. 
+
+
 %% Part 2. Predator-prey stochastic model
 % Now let us model a system with more than one reaction, namely a
 % predator-prey system. Let us call the number of prey X and the number of
@@ -110,8 +204,56 @@ plot(tplot,xplot)
 % on the model above. Find the nullclines and the fixed points and predict
 % the qualitative behavior of the system. This is the model for the mean
 % number of predators and prey.
-%
-% 2.2 *Stochastic model*
+
+clear all;clc; 
+close all
+
+c1 = 20;
+c2 = 10; 
+c3 = 0.01;
+
+options = odeset('Refine',10,'MaxStep',0.1);
+
+tlimit=200;
+tspan=[0 tlimit]; 
+time=zeros(tlimit,1);
+
+figure; 
+hold all;
+xmin= 0; 
+xmax= 10;
+ymin= xmin;
+ymax= xmax;
+dx = 0.2; 
+dy = 0.2; 
+[X,Y]=meshgrid(xmin:dx:xmax, ymin:dy:ymax); 
+
+dy = -c2*Y + c3*X*Y;
+dx = c1*X - c3*X*Y;
+
+quiver(X,Y,dx,dy);
+xlim([xmin xmax]); 
+ylim([ymin ymax]);
+
+
+%%
+c1 = 20;
+c2 = 10; 
+c3 = 0.01;
+X = 100*ones(1,1000);
+Y = 100*ones(1,1000);
+t = 0:1:999;
+
+for i = 2:1000
+    X(i) = exp((c1-c3*Y(i-1))*i);
+    Y(i) = exp((c3*X(i-1) - c2)*i);
+end
+
+plot(t,X);
+plot(t,Y);
+
+
+%% 2.2 *Stochastic model*
 %
 % Implement the Gillespie algorithm for the three-reaction predator-prey
 % model. Using the parameters above and initial conditions X0 = 500, Y0 =
@@ -119,6 +261,49 @@ plot(tplot,xplot)
 % and plot the trajectory in phase space (plot(X,Y)). Describe whether it
 % agrees with the qualitative behavior of the continuous ODE model, and how
 % the stochasticity manifests itself.
+
+clear all;
+
+M = 3;
+N = 2; 
+
+c = [20 10 0.01]; 
+X = [500 500]; 
+
+t = 0; %sets initial time 
+tplot = zeros(1); 
+tmax = 100000;
+k = 2; 
+xplot = 500*ones(1); 
+yplot = 500*ones(1);
+tau=1; 
+
+while (t<tmax) && tau~=0
+    r1 = rand;
+    r2 = rand; 
+    a = [c(1)*X(1); c(2)*X(2);c(3)*X(1)*X(2)]; 
+    A = sum(a); 
+    tau = -log(r1)/A;
+    t = t+tau; 
+    check = r2*A;
+    if 0<check<= a(1)
+        X(1) = X(1) + 1;
+    elseif a(1)<check<=a(1) + a(2)
+        X(2) = X(2)-1;
+    elseif a(1) + a(2)<check<A
+        X(1) = X(1) - 1; 
+        X(2) = X(2) + 1;
+    end 
+    tplot(k) = t; 
+    xplot(k) = X(1); 
+    yplot(k) = X(2);
+    k = k+1; 
+end
+plot(xplot,yplot)
+
+
+% the next reaction index k is the integer such that r2*A is *between* the 
+% sum of a(i) from 1 to k-1 and the sum of a(i) from 1 to k
 %
 % 2.3 *Extinction of species*
 %
