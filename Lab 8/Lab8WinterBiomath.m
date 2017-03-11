@@ -214,44 +214,33 @@ c3 = 0.01;
 
 options = odeset('Refine',10,'MaxStep',0.1);
 
-tlimit=200;
+tlimit=1000;
 tspan=[0 tlimit]; 
 time=zeros(tlimit,1);
 
 figure; 
 hold all;
-xmin= 0; 
-xmax= 10;
-ymin= xmin;
-ymax= xmax;
-dx = 0.2; 
-dy = 0.2; 
+xmin= 999; 
+xmax= 1001;
+ymin= 1999;
+ymax= 2001;
+dx =0.05; 
+dy =0.05; 
 [X,Y]=meshgrid(xmin:dx:xmax, ymin:dy:ymax); 
 
-dy = -c2*Y + c3*X*Y;
-dx = c1*X - c3*X*Y;
+dy = Y*(-c2 + c3*X);
+dx = X*(c1 - c3*Y);
+
+%   dS/dt = S*(a-S-b*R)
+%   dR/dt = R*(c-R-d*S)
 
 quiver(X,Y,dx,dy);
 xlim([xmin xmax]); 
 ylim([ymin ymax]);
 
-
-%%
-c1 = 20;
-c2 = 10; 
-c3 = 0.01;
-X = 100*ones(1,1000);
-Y = 100*ones(1,1000);
-t = 0:1:999;
-
-for i = 2:1000
-    X(i) = exp((c1-c3*Y(i-1))*i);
-    Y(i) = exp((c3*X(i-1) - c2)*i);
-end
-
-plot(t,X);
-plot(t,Y);
-
+% Fixed point, calculated by hand, is (1000,2000). The nullcline is a
+% circle, therefore the populations will alternatively increase and
+% decrease in a stable fashion (at least in theory).
 
 %% 2.2 *Stochastic model*
 %
@@ -262,7 +251,6 @@ plot(t,Y);
 % agrees with the qualitative behavior of the continuous ODE model, and how
 % the stochasticity manifests itself.
 
-clear all;
 
 M = 3;
 N = 2; 
@@ -286,11 +274,11 @@ while (t<tmax) && tau~=0
     tau = -log(r1)/A;
     t = t+tau; 
     check = r2*A;
-    if 0<check<= a(1)
+    if check <= a(1)
         X(1) = X(1) + 1;
-    elseif a(1)<check<=a(1) + a(2)
+    elseif a(1) < check && check <= a(1) + a(2)
         X(2) = X(2)-1;
-    elseif a(1) + a(2)<check<A
+    elseif a(1) + a(2) < check && check <= A
         X(1) = X(1) - 1; 
         X(2) = X(2) + 1;
     end 
@@ -301,10 +289,11 @@ while (t<tmax) && tau~=0
 end
 plot(xplot,yplot)
 
+% The plot shows significant similarities to the proposed nullcline/ phase
+% plane dynamics. The overall shape is the same, and the fixed point can be
+% seen in the center of the system. The stochasticity manifests itself in
+% different speeds in unraveling. 
 
-% the next reaction index k is the integer such that r2*A is *between* the 
-% sum of a(i) from 1 to k-1 and the sum of a(i) from 1 to k
-%
 % 2.3 *Extinction of species*
 %
 % Change the initial populations to be 10 each (of predatory and prey) so
@@ -312,7 +301,100 @@ plot(xplot,yplot)
 % the fraction of 200 simulations which go extinct in 1000 steps. Change
 % the initial populations to 20 each, run 200 simulations, and again report
 % the fraction that goes extinct in 1000 steps.
-%
+
+ct = 0;
+
+for i = 1:200
+    M = 3;
+    N = 2; 
+
+    c = [20 10 0.01]; 
+    X = [10 10]; 
+
+    t = 0; %sets initial time 
+    tplot = zeros(1); 
+    tmax = 1000;
+    k = 2; 
+    xplot = 10*ones(1); 
+    yplot = 10*ones(1);
+    tau=1; 
+
+    while (t<tmax) && tau~=0 && k < tmax
+        r1 = rand;
+        r2 = rand; 
+        a = [c(1)*X(1); c(2)*X(2);c(3)*X(1)*X(2)]; 
+        A = sum(a); 
+        tau = -log(r1)/A;
+        t = t+tau; 
+        check = r2*A;
+        if check <= a(1)
+            X(1) = X(1) + 1;
+        elseif a(1) < check && check <= a(1) + a(2)
+            X(2) = X(2)-1;
+        elseif a(1) + a(2) < check && check <= A
+            X(1) = X(1) - 1; 
+            X(2) = X(2) + 1;
+        end 
+        tplot(k) = t; 
+        xplot(k) = X(1); 
+        yplot(k) = X(2);
+        k = k+1; 
+    end
+    if X(1) == 0 || X(2) == 0
+        ct=ct+1;
+    end
+end 
+
+frac = ct/200;
+
+ct2 = 0;
+
+for i = 1:200
+    M = 3;
+    N = 2; 
+
+    c = [20 10 0.01]; 
+    X = [20 20]; 
+
+    t = 0; %sets initial time 
+    tplot = zeros(1); 
+    tmax = 1000;
+    k = 2; 
+    xplot = 20*ones(1); 
+    yplot = 20*ones(1);
+    tau=1; 
+
+    while (t<tmax) && tau~=0 && k < tmax
+        r1 = rand;
+        r2 = rand; 
+        a = [c(1)*X(1); c(2)*X(2);c(3)*X(1)*X(2)]; 
+        A = sum(a); 
+        tau = -log(r1)/A;
+        t = t+tau; 
+        check = r2*A;
+        if check <= a(1)
+            X(1) = X(1) + 1;
+        elseif a(1) < check && check <= a(1) + a(2)
+            X(2) = X(2)-1;
+        elseif a(1) + a(2) < check && check <= A
+            X(1) = X(1) - 1; 
+            X(2) = X(2) + 1;
+        end 
+        tplot(k) = t; 
+        xplot(k) = X(1); 
+        yplot(k) = X(2);
+        k = k+1; 
+    end
+    if X(1) == 0 || X(2) == 0
+        ct2=ct2+1;
+    end
+end 
+
+frac2 = ct2/200;
+
+% The fraction is generally significantly lower when initial population is
+% increased. 
+
 % 2.4 *Fluctuations around the equilibrium*
 %
 % Set your initial populations to the non-zero fixed point that you found in 2.1
@@ -323,7 +405,53 @@ plot(xplot,yplot)
 % simulations as a function of time. Plot variance vs. t. What is the
 % relationship? For a pure diffusion process, the variance will increase
 % linearly as a function of time. Is that the case here? 
-%
+
+dist = zeros(10,1);
+for i = 1:10
+    M = 3;
+    N = 2; 
+
+    c = [20 10 0.01]; 
+    X = [1000 2000]; 
+
+    t = 0; %sets initial time 
+    tplot = zeros(1); 
+    tmax = 10000;
+    k = 2; 
+    xplot = 500*ones(1); 
+    yplot = 500*ones(1);
+    tau=1; 
+
+    while (t<tmax) && tau~=0 && k<tmax
+        r1 = rand;
+        r2 = rand; 
+        a = [c(1)*X(1); c(2)*X(2);c(3)*X(1)*X(2)]; 
+        A = sum(a); 
+        tau = -log(r1)/A;
+        t = t+tau; 
+        check = r2*A;
+        if check <= a(1)
+            X(1) = X(1) + 1;
+        elseif a(1) < check && check <= a(1) + a(2)
+            X(2) = X(2)-1;
+        elseif a(1) + a(2) < check && check <= A
+            X(1) = X(1) - 1; 
+            X(2) = X(2) + 1;
+        end 
+        tplot(k) = t; 
+        xplot(k) = X(1); 
+        yplot(k) = X(2);
+        dist(i,k) = sqrt((X(1) - 1000)^2 + (X(2) - 2000)^2);
+        k = k+1; 
+    end
+end
+plot(tplot,dist)
+
+% No, that is generally not the case with the functions I see. They
+% occasionally look close to linear, given that they are stochastic and
+% will never be perfectly linear, but most of the time they are far from
+% it, oscillating up and down often. 
+
 % 2.5 *Comparison of amplitude and frequencies of oscillations*
 %
 % This exercise will require that you run the simulation twice: Once with
@@ -336,4 +464,104 @@ plot(xplot,yplot)
 % populations are equal to the fixed points. How are they similar or
 % different? Are amplitude and frequency independent of one another? (this
 % is a hallmark of linear oscillations)
+
+close all
+
+c = [20 10 0.01]; 
+X = [500 500]; 
+
+t = 0; %sets initial time 
+tplot = zeros(1); 
+tmax = 100000;
+k = 2; 
+xplot = 500*ones(1); 
+yplot = 500*ones(1);
+tau=1; 
+
+while (t<tmax) && tau~=0 && k<tmax
+    r1 = rand;
+    r2 = rand; 
+    a = [c(1)*X(1); c(2)*X(2);c(3)*X(1)*X(2)]; 
+    A = sum(a); 
+    tau = -log(r1)/A;
+    t = t+tau; 
+    check = r2*A;
+    if check <= a(1)
+        X(1) = X(1) + 1;
+    elseif a(1) < check && check <= a(1) + a(2)
+        X(2) = X(2)-1;
+    elseif a(1) + a(2) < check && check <= A
+        X(1) = X(1) - 1; 
+        X(2) = X(2) + 1;
+    end 
+    tplot(k) = t; 
+    xplot(k) = X(1); 
+    yplot(k) = X(2);
+    k = k+1; 
+end
+figure
+hold on
+plot(tplot,xplot)
+plot(tplot,yplot)
+legend('X','Y')
+hold off
+
+c = [20 10 0.01]; 
+X = [1000 2000]; 
+
+t = 0; %sets initial time 
+tplot = zeros(1); 
+tmax = 100000;
+k = 2; 
+xplot = 1000*ones(1); 
+yplot = 2000*ones(1);
+tau=1; 
+
+while (t<tmax) && tau~=0 && k<tmax
+    r1 = rand;
+    r2 = rand; 
+    a = [c(1)*X(1); c(2)*X(2);c(3)*X(1)*X(2)]; 
+    A = sum(a); 
+    tau = -log(r1)/A;
+    t = t+tau; 
+    check = r2*A;
+    if check <= a(1)
+        X(1) = X(1) + 1;
+    elseif a(1) < check && check <= a(1) + a(2)
+        X(2) = X(2)-1;
+    elseif a(1) + a(2) < check && check <= A
+        X(1) = X(1) - 1; 
+        X(2) = X(2) + 1;
+    end 
+    tplot(k) = t; 
+    xplot(k) = X(1); 
+    yplot(k) = X(2);
+    k = k+1; 
+end
+figure 
+hold on
+plot(tplot,xplot)
+plot(tplot,yplot)
+legend('X','Y')
+hold off
+
+% In both graphs the prey values never reached as high as the predator
+% values, but seemed to oscillate as the same frequency in the 500/500
+% state. For the steady-state system, the overall frequency appeared to be
+% the same, but it also had many more errant frequencies that are difficult
+% to track. It would be difficult to tell which is which however, so I
+% assume it also has a shared frequency. And while the 500/500 state had
+% distinctly larger amplitudes for predators, that was difficult to observe
+% in the steady-state: the values for predator population were always
+% larger, but their amplitudes appeared similar. Amplitude and frequency do
+% generally appear to be independent of one another. 
+
+
+
+
+
+
+
+
+
 
